@@ -22,17 +22,27 @@ def check_membership(update: Update, context):
         try:
             member = context.bot.get_chat_member(chat_id=channel, user_id=user_id)
             if member.status not in ["member", "administrator", "creator"]:
-                # اگه کاربر عضو نباشه، پیامش رو پاک کن
-                message.delete()
-                message.reply_text(
-                    f"برای ارسال پیام، باید توی کانال زیر عضو شی:\n" +
-                    "\n".join(REQUIRED_CHANNELS) +
-                    "\nبعد از عضویت، دوباره پیام بفرست."
+                # سعی کن پیام رو پاک کنی
+                try:
+                    message.delete()
+                except Exception as e:
+                    # اگه پاک کردن پیام خطا داد، فقط لاگ کن
+                    print(f"خطا در پاک کردن پیام: {e}")
+
+                # به‌جای reply، پیام جدید بفرست
+                context.bot.send_message(
+                    chat_id=chat_id,
+                    text=f"برای ارسال پیام، باید توی کانال زیر عضو شی:\n" +
+                         "\n".join(REQUIRED_CHANNELS) +
+                         "\nبعد از عضویت، دوباره پیام بفرست."
                 )
                 return
         except Exception as e:
             # اگه ربات ادمین کانال نباشه یا خطایی پیش بیاد
-            message.reply_text(f"خطا: لطفاً مطمئن شو که من ادمین کانالم. خطا: {e}")
+            context.bot.send_message(
+                chat_id=chat_id,
+                text=f"خطا: لطفاً مطمئن شو که من ادمین کانالم. خطا: {e}"
+            )
             return
 
 def main():
