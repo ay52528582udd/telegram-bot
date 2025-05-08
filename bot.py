@@ -1,14 +1,15 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, Filters, ContextTypes
+import os
 
-# توکن رباتت رو اینجا بذار
-TOKEN = "7757236129:AAHXfm4ARSzSKRUXh6VVSqVBNcjH6ND_as8"
+# توکن ربات از متغیر محیطی گرفته می‌شه (برای امنیت)
+TOKEN = os.getenv("TOKEN")
 
-# آیدی کانال‌های مورد نظر (مثلاً @Channel1, @Channel2)
+# آیدی کانال‌های مورد نظر (فقط یکی دادی، اگه بیشتره اضافه کن)
 REQUIRED_CHANNELS = ["@testtttttttttttttt52"]
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("سلام! من ربات جوین اجباری‌ام. برای ارسال پیام توی گروه، باید توی کانال‌های زیر عضو شی:\n" +
+    await update.message.reply_text("سلام! من ربات جوین اجباری‌ام. برای ارسال پیام توی گروه، باید توی کانال زیر عضو شی:\n" +
                                    "\n".join(REQUIRED_CHANNELS))
 
 async def check_membership(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -16,7 +17,7 @@ async def check_membership(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = message.from_user.id
     chat_id = message.chat_id
 
-    # چک کردن عضویت کاربر توی کانال‌ها
+    # چک کردن عضویت کاربر توی کانال
     for channel in REQUIRED_CHANNELS:
         try:
             member = await context.bot.get_chat_member(chat_id=channel, user_id=user_id)
@@ -24,7 +25,7 @@ async def check_membership(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 # اگه کاربر عضو نباشه، پیامش رو پاک کن
                 await message.delete()
                 await message.reply_text(
-                    f"برای ارسال پیام، باید توی کانال‌های زیر عضو شی:\n" +
+                    f"برای ارسال پیام، باید توی کانال زیر عضو شی:\n" +
                     "\n".join(REQUIRED_CHANNELS) +
                     "\nبعد از عضویت، دوباره پیام بفرست."
                 )
